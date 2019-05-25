@@ -11,7 +11,10 @@ import csv
 import numpy as np
 from bs4 import BeautifulSoup
 
-
+'''
+This function builds a csv file with only the wikipedia top cities table and returns the wikipedia page links for each city in a list format.
+It uses functions writeheaders and writeData to build the csv file.
+'''
 def buildCSV():
     website_url = requests.get('https://en.wikipedia.org/wiki/List_of_United_States_cities_by_population').text
     soup = BeautifulSoup(website_url,'lxml')
@@ -28,8 +31,10 @@ def buildCSV():
     f.close()
     return links
 
-
-# In[105]:
+'''
+This writes all the headers for the csv file that we generate. It only includes the data scraped from the top cities table. 
+However, the data is preprocessed and the encoding is utf-8-sig.
+'''
 
 
 def writeheaders(headers,f):
@@ -48,7 +53,9 @@ def writeheaders(headers,f):
     heads.append('longitude')
     headerstr = ','.join(heads) + '\n'
     f.write(headerstr)
-
+'''
+This writes all the data i.e. all the cities and their respective data mentioned in the table.
+'''
 
 def writeData(rows,f):
     from unicodedata import normalize
@@ -70,7 +77,9 @@ def writeData(rows,f):
         f.write(writestr)
 
 
-# In[112]:
+'''
+This function adds all the additional data i.e. Links for FIPS pages and also the summary for the wikipedia page for that city.
+'''
 
 
 def addFIPSandSummary(data, links):
@@ -95,6 +104,10 @@ def addFIPSandSummary(data, links):
     data['summary'] = summ
     return data
 
+'''
+This function generates a summary for the wikipedia page given a link. It uses all the 'p' elements in the page. 
+Input is the link for the page. It is a naive extractive approach for text summarization based on term frequencies. 
+'''
 def generateSummary(l):
     link = requests.get(l).text
     soup = BeautifulSoup(link,'lxml')
@@ -139,7 +152,9 @@ def generateSummary(l):
     summary.replace(',','')
     return summary
     
-
+'''
+The main function. Generates a final csv. Takes some time to run. About 5 minutes. 
+'''
 
 def main():
     links = buildCSV()
